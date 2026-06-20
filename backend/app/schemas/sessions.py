@@ -21,6 +21,10 @@ class SessionCreate(BaseModel):
     run_id: UUID
 
 
+class HintRequest(BaseModel):
+    error_area: str
+
+
 class SessionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
