@@ -1,6 +1,7 @@
-"""Sessions router — Phase 4.4."""
+"""Sessions router — Phase 4.4 + Phase 5.3 (terminal token)."""
 from __future__ import annotations
 
+import secrets
 from typing import Annotated
 from uuid import UUID
 
@@ -11,6 +12,7 @@ from app.core.deps import get_current_user, require_roles
 from app.core.errors import SESSION_NOT_READY
 from app.core.response import ResponseModel
 from app.db.postgres import get_db
+from app.db.redis import get_redis
 from app.models.user import User
 from app.schemas.sessions import HintRequest, SessionCreate, SessionResponse
 
@@ -95,6 +97,24 @@ async def submit_session(
     )
 
     return ResponseModel.ok(SessionResponse.model_validate(updated))
+
+
+@router.post("/{session_id}/terminal-token", summary="Выпустить одноразовый токен для WebSocket-терминала")
+async def get_terminal_token(
+    session_id: UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
+    redis: Annotated[object, Depends(get_redis)],
+) -> ResponseModel[dict[str, object]]:
+    """Issue a one-time short-lived token for WebSocket terminal authentication.
+
+    The token is stored in Redis with TTL=60 s and consumed on first use by the
+    ``/ws/sessions/{id}/terminal`` handler.  Ownership of the session is **not**
+    verified here — the sandbox only exists for active sessions, so an invalid
+    ``session_id`` simply yields no container when the WS handler tries to attach.
+    """
+    token = secrets.token_urlsafe(32)
+    await redis.set(f"terminal_token:{token}", str(session_id), ex=60)  # type: ignore[union-attr]
+    return ResponseModel.ok({"token": token, "expires_in": 60})
 
 
 @router.post("/{session_id}/hint", summary="Запросить подсказку")
