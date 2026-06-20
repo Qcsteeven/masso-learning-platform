@@ -210,8 +210,8 @@ markers = ["smoke: end-to-end smoke tests requiring all services running"]
 | **Phase 1** | SQLAlchemy ORM (14 таблиц), Alembic 0001, DB clients, Neo4j constraints, Seed | ✅ Done |
 | **Phase 2** | Pydantic schemas (11 файлов), FastAPI router stubs (10 + ws.py), 26 unit tests | ✅ Done |
 | **Phase 3** | Auth/RBAC: JWT+bcrypt (security.py), deps (get_current_user/require_roles), auth routes (login/refresh/logout/me), user_service, audit_service, security_service; frontend: AuthProvider, login page, 401 interceptor | ✅ Done |
-| **Phase 4** | LLM Gateway + ProfileAgent + ScenarioAgent + AssessmentAgent | 🔄 In progress |
-| **Phase 5** | Sandbox Manager + WebSocket terminal + event channels | ⏳ Pending |
+| **Phase 4** | LLM Gateway (4 адаптера: openai/anthropic/ollama/template, fallback chain, switch_mode без прерывания сессий); ProfileAgent (Neo4j read-only, deficit calc, rank); ScenarioAgent (ChromaDB dedup ≥0.90, LLM generate, validate, publish); AssessmentAgent (≤3 hint limit, HINCRBY, submit→verification queue, Neo4j write-back) | ✅ Done |
+| **Phase 5** | Sandbox Manager + WebSocket terminal + event channels | 🔄 In progress |
 | **Phase 6** | Student/Teacher/Methodist/Admin UI | ⏳ Pending |
 | **Phase 7** | Verification Engine + incidents + hints + reports | ⏳ Pending |
 | **Phase 8** | Prometheus metrics + backup + CI/CD + smoke tests | ⏳ Pending |

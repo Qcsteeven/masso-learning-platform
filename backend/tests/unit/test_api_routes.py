@@ -88,9 +88,9 @@ def test_stub_routes_return_error_envelope() -> None:
     app = _app()
     client = TestClient(app, raise_server_exceptions=False)
 
-    # /users/ is now auth-protected (returns 401/403), so we test a non-auth route
-    # that still returns our envelope format.
-    resp = client.get("/skills/graph")
+    # All functional routes are now auth-protected; test the health endpoint
+    # which returns our envelope format without auth.
+    resp = client.get("/health")
     body = resp.json()
     assert "status" in body
     assert "request_id" in body
