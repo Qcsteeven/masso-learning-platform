@@ -202,6 +202,26 @@ markers = ["smoke: end-to-end smoke tests requiring all services running"]
 
 ---
 
+## Статус реализации (обновляется по ходу разработки)
+
+| Фаза | Этапы | Статус |
+|------|-------|--------|
+| **Phase 0** | Scaffold: pyproject.toml, Next.js 16.2, docker-compose.dev.yml, sandbox Dockerfiles | ✅ Done |
+| **Phase 1** | SQLAlchemy ORM (14 таблиц), Alembic 0001, DB clients, Neo4j constraints, Seed | ✅ Done |
+| **Phase 2** | Pydantic schemas (11 файлов), FastAPI router stubs (10 + ws.py), 26 unit tests | ✅ Done |
+| **Phase 3** | Auth/RBAC: JWT+bcrypt (security.py), deps (get_current_user/require_roles), auth routes (login/refresh/logout/me), user_service, audit_service, security_service; frontend: AuthProvider, login page, 401 interceptor | ✅ Done |
+| **Phase 4** | LLM Gateway + ProfileAgent + ScenarioAgent + AssessmentAgent | 🔄 In progress |
+| **Phase 5** | Sandbox Manager + WebSocket terminal + event channels | ⏳ Pending |
+| **Phase 6** | Student/Teacher/Methodist/Admin UI | ⏳ Pending |
+| **Phase 7** | Verification Engine + incidents + hints + reports | ⏳ Pending |
+| **Phase 8** | Prometheus metrics + backup + CI/CD + smoke tests | ⏳ Pending |
+
+**Деградированный старт (Phase 0–2):** `uvicorn app.main:app --reload --port 8000` стартует без БД —
+каждый недоступный сервис логируется как WARNING, остальные endpoints возвращают `NOT_IMPLEMENTED`.
+БД нужны начиная с Phase 3 (интеграционные тесты).
+
+---
+
 ## Роли и права (RBAC)
 
 | Код | Роль | Ключевые права |
