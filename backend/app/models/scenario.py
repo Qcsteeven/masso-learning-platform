@@ -1,7 +1,8 @@
 from uuid import UUID
 
 from sqlalchemy import ForeignKey, Integer, String, Text
-from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin, new_uuid
@@ -35,8 +36,4 @@ class ScenarioRun(Base, TimestampMixin):
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="created")
 
     template: Mapped["ScenarioTemplate"] = relationship(back_populates="runs")
-    sessions: Mapped[list["LearningSession"]] = relationship(back_populates="run")  # type: ignore[name-defined]
-
-
-# Avoid circular import — LearningSession is defined in session.py
-from app.models.session import LearningSession  # noqa: E402, F401
+    sessions: Mapped[list["LearningSession"]] = relationship(back_populates="run")  # noqa: F821

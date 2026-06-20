@@ -1,4 +1,5 @@
 import asyncio
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import pool
@@ -11,8 +12,16 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Models will be imported here in Phase 1.1 to enable autogenerate
-target_metadata = None
+# Import all models so autogenerate can detect them (must be after config is initialised)
+import app.models  # noqa: F401, E402
+from app.models.base import Base  # noqa: E402
+
+target_metadata = Base.metadata
+
+# Override sqlalchemy.url from environment if set
+_db_url = os.environ.get("DATABASE_URL")
+if _db_url:
+    config.set_main_option("sqlalchemy.url", _db_url)
 
 
 def run_migrations_offline() -> None:

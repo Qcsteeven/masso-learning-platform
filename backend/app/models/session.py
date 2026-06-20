@@ -2,7 +2,8 @@ from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import DateTime, ForeignKey, String
-from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin, new_uuid
@@ -23,11 +24,12 @@ class LearningSession(Base, TimestampMixin):
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     trace_id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), nullable=False, default=new_uuid)
 
-    run: Mapped["ScenarioRun"] = relationship(back_populates="sessions")  # type: ignore[name-defined]
+    # SQLAlchemy resolves string forward refs via mapper registry at configure_mappers() time.
+    run: Mapped["ScenarioRun"] = relationship(back_populates="sessions")  # noqa: F821
     events: Mapped[list["SessionEvent"]] = relationship(back_populates="session")
-    hints: Mapped[list["Hint"]] = relationship(back_populates="session")  # type: ignore[name-defined]
-    verification_results: Mapped[list["VerificationResult"]] = relationship(back_populates="session")  # type: ignore[name-defined]
-    reports: Mapped[list["Report"]] = relationship(back_populates="session")  # type: ignore[name-defined]
+    hints: Mapped[list["Hint"]] = relationship(back_populates="session")  # noqa: F821
+    verification_results: Mapped[list["VerificationResult"]] = relationship(back_populates="session")  # noqa: F821
+    reports: Mapped[list["Report"]] = relationship(back_populates="session")  # noqa: F821
 
 
 class SessionEvent(Base):
@@ -46,11 +48,6 @@ class SessionEvent(Base):
     event_type: Mapped[str] = mapped_column(String(64), nullable=False)
     severity: Mapped[str] = mapped_column(String(32), nullable=False, default="info")
     payload: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), nullable=False
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
     session: Mapped["LearningSession"] = relationship(back_populates="events")
-
-
-from app.models.scenario import ScenarioRun  # noqa: E402, F401

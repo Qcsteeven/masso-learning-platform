@@ -9,9 +9,27 @@ from app.core.config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
-    # DB startup checks will be wired here in Phase 1.3
+    # ── DB startup ─────────────────────────────────────────────────────────
+    from app.db.chromadb import init_chromadb
+    from app.db.neo4j import init_neo4j
+    from app.db.neo4j_schema import ensure_neo4j_constraints
+    from app.db.postgres import check_postgres
+    from app.db.redis import init_redis
+
+    await check_postgres()
+    await init_neo4j()
+    await ensure_neo4j_constraints()
+    await init_chromadb()
+    await init_redis()
+
     yield
-    # Cleanup goes here
+
+    # ── DB shutdown ────────────────────────────────────────────────────────
+    from app.db.neo4j import close_neo4j
+    from app.db.redis import close_redis
+
+    await close_neo4j()
+    await close_redis()
 
 
 def create_app() -> FastAPI:

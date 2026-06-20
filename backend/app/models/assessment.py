@@ -1,7 +1,8 @@
 from uuid import UUID
 
 from sqlalchemy import ForeignKey, Integer, Numeric, String, Text
-from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin, new_uuid
@@ -20,7 +21,7 @@ class Hint(Base, TimestampMixin):
         Numeric(5, 2), nullable=False, default=10.00
     )
 
-    session: Mapped["LearningSession"] = relationship(back_populates="hints")  # type: ignore[name-defined]
+    session: Mapped["LearningSession"] = relationship(back_populates="hints")  # noqa: F821
 
 
 class VerificationResult(Base, TimestampMixin):
@@ -35,7 +36,7 @@ class VerificationResult(Base, TimestampMixin):
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="pending")
     errors: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
 
-    session: Mapped["LearningSession"] = relationship(back_populates="verification_results")  # type: ignore[name-defined]
+    session: Mapped["LearningSession"] = relationship(back_populates="verification_results")  # noqa: F821
     reports: Mapped[list["Report"]] = relationship(back_populates="verification")
 
 
@@ -54,8 +55,5 @@ class Report(Base, TimestampMixin):
     period_to: Mapped[str | None] = mapped_column(String(32), nullable=True)
     file_url: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    session: Mapped["LearningSession"] = relationship(back_populates="reports")  # type: ignore[name-defined]
+    session: Mapped["LearningSession"] = relationship(back_populates="reports")  # noqa: F821
     verification: Mapped["VerificationResult | None"] = relationship(back_populates="reports")
-
-
-from app.models.session import LearningSession  # noqa: E402, F401
