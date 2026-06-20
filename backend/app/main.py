@@ -1,3 +1,4 @@
+import logging as _logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -17,8 +18,6 @@ from app.api.verification import router as verification_router
 from app.api.ws import router as ws_router
 from app.core.config import settings
 
-
-import logging as _logging
 _log = _logging.getLogger(__name__)
 
 
