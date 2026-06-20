@@ -3,13 +3,23 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.admin_llm import router as admin_llm_router
+from app.api.admin_sandbox import router as admin_sandbox_router
+from app.api.auth import router as auth_router
+from app.api.events import router as events_router
 from app.api.health import router as health_router
+from app.api.reports import router as reports_router
+from app.api.scenarios import router as scenarios_router
+from app.api.sessions import router as sessions_router
+from app.api.skills import router as skills_router
+from app.api.users import router as users_router
+from app.api.verification import router as verification_router
+from app.api.ws import router as ws_router
 from app.core.config import settings
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
-    # ── DB startup ─────────────────────────────────────────────────────────
     from app.db.chromadb import init_chromadb
     from app.db.neo4j import init_neo4j
     from app.db.neo4j_schema import ensure_neo4j_constraints
@@ -24,7 +34,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
 
     yield
 
-    # ── DB shutdown ────────────────────────────────────────────────────────
     from app.db.neo4j import close_neo4j
     from app.db.redis import close_redis
 
@@ -42,6 +51,17 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health_router)
+    app.include_router(auth_router)
+    app.include_router(users_router)
+    app.include_router(skills_router)
+    app.include_router(scenarios_router)
+    app.include_router(sessions_router)
+    app.include_router(events_router)
+    app.include_router(verification_router)
+    app.include_router(reports_router)
+    app.include_router(admin_llm_router)
+    app.include_router(admin_sandbox_router)
+    app.include_router(ws_router)
 
     return app
 
