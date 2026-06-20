@@ -93,7 +93,7 @@ async def seed_neo4j() -> None:
     async with driver.session() as neo_session:
         for d in domains:
             await neo_session.run(
-                "MERGE (:Domain {domain_id: $domain_id}) "
+                "MERGE (n:Domain {domain_id: $domain_id}) "
                 "SET n.code = $code, n.name = $name",
                 **d,
             )
